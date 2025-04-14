@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-cn">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <link rel="stylesheet" href="/static/css/sober-theme.css" />
+  <title>PRTS</title>
+  <style>
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+      margin: 0;
+      /**禁用字体缩放**/
+      -webkit-text-size-adjust: none;
+    }
+
+    /**隐藏未加载的组件**/
+    :not(:defined) {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <s-page theme="auto">
+    <!--抽屉布局-->
+    <s-drawer>
+      <!--应用栏-->
+      <s-appbar>
+        <!--应用栏-标题-->
+        <div slot="headline" style="margin-left: 16px;"> 欢迎使用罗德岛 PRTS 终端 </div>
+      </s-appbar>
+      <!--主视图-->
+      <s-scroll-view style="flex-grow: 1">
+        <main style="height: 100%;display: flex;align-items: center;">
+          <s-card style="width: 70%; max-width: 70%; padding: 16px; margin-left: 15%">
+            <div slot="headline" style="text-align: center;">欢迎回来！{{user | title}}！</div>
+            <div slot="text">
+              <div align="center" style="margin-top: 16px;">
+                <img src="/api/get_avatar?username={{user}}.png"
+                  style="width: 100px; height: 100px; border-radius: 50%; margin-top: 16px; margin-bottom: 16px;"
+                  alt="头像" />
+                <br>
+                {% if username == "doctor" %}
+                <s-alert type="error">你已被封禁！</s-alert>
+                {% elif username == "priestess" %}
+                <s-alert type="success">欢迎回来，普瑞赛斯！你的权限密钥为 "<<flag>>"。</s-alert>
+                {% endif %}
+              </div>
+          </s-card>
+        </main>
+      </s-scroll-view>
+    </s-drawer>
+  </s-page>
+  <script>
+    //safari user-scalable=no
+    document.addEventListener('gesturestart', (event) => event.preventDefault())
+  </script>
+  <script src="/static/js/sober.min.js"></script>
+
+</body>
+
+</html>

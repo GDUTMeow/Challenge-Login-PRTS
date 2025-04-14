@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <link rel="stylesheet" href="/static/css/sober-theme.css" />
+    <link rel="stylesheet" href="/static/css/login.css" />
+    <title>登录 | PRTS</title>
+    <style>
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+        margin: 0;
+        /**禁用字体缩放**/
+        -webkit-text-size-adjust: none;
+      }
+
+      .scrim {
+        background: none !important;
+      }
+
+      /**隐藏未加载的组件**/
+      :not(:defined) {
+        display: none;
+      }
+
+      .dialog {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding: 24px;
+      }
+
+      .dialog > .text-field {
+        flex-grow: 1;
+        width: auto;
+      }
+
+      .dialog > .link {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.875rem;
+      }
+
+      .dialog > .link > a {
+        color: var(--s-color-primary);
+        text-decoration: none;
+      }
+
+      .dialog > .other {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        padding: 0 24px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <s-page
+      theme="auto"
+      style="display: flex; justify-content: center; align-items: center"
+    >
+      <s-dialog showed="true">
+        <s-button slot="trigger">登录</s-button>
+        <div slot="headline">登录</div>
+        <div class="dialog">
+          <s-text-field class="text-field" label="账号" value="" id="username">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 -960 960 960"
+              slot="start"
+            >
+              <path
+                d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Zm80-80h480v-32q0-11-5.5-20T700-306q-54-27-109-40.5T480-360q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32Zm240-320q33 0 56.5-23.5T560-640q0-33-23.5-56.5T480-720q-33 0-56.5 23.5T400-640q0 33 23.5 56.5T480-560Zm0-80Zm0 400Z"
+              ></path>
+            </svg>
+          </s-text-field>
+          <s-text-field
+            class="text-field"
+            style="margin-top: 8px"
+            label="密码"
+            type="password"
+            value=""
+            id="password"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 -960 960 960"
+              slot="start"
+            >
+              <path
+                d="M80-200v-80h800v80H80Zm46-242-52-30 34-60H40v-60h68l-34-58 52-30 34 58 34-58 52 30-34 58h68v60h-68l34 60-52 30-34-60-34 60Zm320 0-52-30 34-60h-68v-60h68l-34-58 52-30 34 58 34-58 52 30-34 58h68v60h-68l34 60-52 30-34-60-34 60Zm320 0-52-30 34-60h-68v-60h68l-34-58 52-30 34 58 34-58 52 30-34 58h68v60h-68l34 60-52 30-34-60-34 60Z"
+              ></path>
+            </svg>
+            <s-icon-button slot="end">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                <path
+                  d="M480-320q75 0 127.5-52.5T660-500q0-75-52.5-127.5T480-680q-75 0-127.5 52.5T300-500q0 75 52.5 127.5T480-320Zm0-72q-45 0-76.5-31.5T372-500q0-45 31.5-76.5T480-608q45 0 76.5 31.5T588-500q0 45-31.5 76.5T480-392Zm0 192q-146 0-266-81.5T40-500q54-137 174-218.5T480-800q146 0 266 81.5T920-500q-54 137-174 218.5T480-200Zm0-300Zm0 220q113 0 207.5-59.5T832-500q-50-101-144.5-160.5T480-720q-113 0-207.5 59.5T128-500q50 101 144.5 160.5T480-280Z"
+                ></path>
+              </svg>
+            </s-icon-button>
+          </s-text-field>
+          <s-button
+            id="submit"
+            style="border-radius: 4px; box-shadow: none"
+            onclick="login()"
+          >
+            <s-circular-progress
+              indeterminate="true"
+              slot="start"
+              id="progress"
+              style="display: none"
+            ></s-circular-progress>
+            登录
+          </s-button>
+        </div>
+      </s-dialog>
+    </s-page>
+    <script>
+      function login() {
+        const submit = document.querySelector("#submit");
+        const progress = document.querySelector("#progress");
+
+        progress.style.display = "block";
+        submit.disabled = true;
+
+        fetch("/api/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: document.querySelector("#username").value,
+            password: document.querySelector("#password").value,
+          }),
+          credentials: "include", // 允许携带cookie
+        })
+          .then((response) => {
+            if (response.redirected) {
+              // 如果后端返回重定向
+              window.location.href = response.url;
+            } else {
+              return response.json().then((data) => {
+                if (!response.ok) throw new Error(data.message || "登录失败");
+                return data;
+              });
+            }
+          })
+          .catch((error) => {
+            console.error("登录错误：", error);
+            alert(error.message);
+          })
+          .finally(() => {
+            progress.style.display = "none";
+            submit.disabled = false;
+          });
+      }
+    </script>
+    <script src="/static/js/sober.min.js"></script>
+  </body>
+</html>
