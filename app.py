@@ -75,7 +75,7 @@ def static_handler(path):
 
 @app.route("/api/get_avatar")
 def avatar_handler():
-    file = request.args.get('username')
+    file = request.args.get('filename')
     return send_file("static/img/" + file)
 
 if __name__ == "__main__":
