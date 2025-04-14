@@ -50,11 +50,9 @@ def login_handler():
 @app.route('/prts')
 @jwt_required
 def prts_handler():
-    print("Cookie: ", request.cookies)
     user = request.cookies.get("user")
     payload = jwt.decode(request.cookies.get("token"), app.config['SECRET_KEY'], algorithms=['HS256'], options={'verify_aud': False})
     username = payload.get("sub")
-    print(payload, user, username)
     if not username:
         return redirect('/login')
     return render_template_string(prts_template, user=user, username=username)
