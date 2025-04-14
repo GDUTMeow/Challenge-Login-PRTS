@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, redirect, send_from_directory, send_file
+from flask import Flask, render_template, request, jsonify, redirect, send_from_directory, send_file, render_template_string
 import jwt
 import os
 import datetime
@@ -57,7 +57,7 @@ def prts_handler():
     print(payload, user, username)
     if not username:
         return redirect('/login')
-    return render_template(prts_template, user=user, username=username)
+    return render_template_string(prts_template, user=user, username=username)
 
 @app.errorhandler(404)
 def page_not_found(e):
