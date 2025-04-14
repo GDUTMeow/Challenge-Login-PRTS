@@ -23,13 +23,13 @@
 
 ![](https://cdn.jsdelivr.net/gh/GDUTMeow/Challenge-Login-PRTS/img/image-20250414205942700.png)
 
-登录成功后，发现提示被封禁
+登录成功后，发现提示被封禁（被老普封了呜呜呜～）
 
 ![](https://cdn.jsdelivr.net/gh/GDUTMeow/Challenge-Login-PRTS/img/image-20250414210323271.png)
 
 打开网页控制台，发现图片是通过一个 API 获取的（换言之，不是直接通过静态文件处理的函数进行的），后面接受了一个参数
 
-> 这里出题的时候最开始是没有 png 的，是在服务端进行后接 `.png` 的操作，但是后来发现如果这么做的话路径穿越就很难弄了（倒不如说根本就用不了），所以就把 `.png` 放到前段来了，但是我忘记改参数名了，它还是 username，所以看起来就有点奇怪
+> 这里出题的时候最开始是没有 png 的，是在服务端进行后接 `.png` 的操作，但是后来发现如果这么做的话路径穿越就很难弄了（倒不如说根本就用不了），所以就把 `.png` 放到前端来了，但是我忘记改参数名了，它还是 username，所以看起来就有点奇怪
 
 ![](https://cdn.jsdelivr.net/gh/GDUTMeow/Challenge-Login-PRTS/img/image-20250414210419237.png)
 
