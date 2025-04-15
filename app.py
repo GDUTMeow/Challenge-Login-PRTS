@@ -123,7 +123,30 @@ def resource_handler():
 
         # 移除所有协议和端口限制
         parsed = urllib.parse.urlparse(target_url)
+        buffer = BytesIO()
+        c = pycurl.Curl()
 
+        if parsed.scheme == "file":
+            # 因为改用 CentOS 后 curl 的版本太低了没有 PATH_AS_IS 选项，所以这里进行手动处理
+            try:
+                with open(parsed.path, "rb") as f:
+                    content = f.read()
+                return jsonify(
+                    {
+                        "code": 200,
+                        "success": True,
+                        "data": {"url": target_url, "content": content.decode("utf-8")},
+                    }
+                )
+            except Exception as e:
+                return jsonify(
+                    {
+                        "code": 500,
+                        "success": False,
+                        "data": {"url": target_url, "content": str(e)},
+                    }
+                )
+            
         buffer = BytesIO()
         c = pycurl.Curl()
 
@@ -133,14 +156,9 @@ def resource_handler():
         c.setopt(pycurl.PROTOCOLS, pycurl.PROTO_ALL)  # 允许所有协议
         c.setopt(pycurl.SSL_VERIFYPEER, 0)
         c.setopt(pycurl.SSL_VERIFYHOST, 0)
-        c.setopt(pycurl.TIMEOUT, 15)
+        c.setopt(pycurl.TIMEOUT, 120)
         c.setopt(pycurl.FOLLOWLOCATION, 1)  # 允许重定向
         c.setopt(pycurl.MAXREDIRS, 5)
-
-        # 特殊协议处理
-        if parsed.scheme == "file":
-            c.setopt(pycurl.UNRESTRICTED_AUTH, 1)  # 允许本地文件访问
-            c.setopt(pycurl.PATH_AS_IS, 1)  # 保留路径格式
 
         # 执行请求
         c.perform()

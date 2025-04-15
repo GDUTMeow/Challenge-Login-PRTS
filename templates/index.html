@@ -98,7 +98,7 @@
           // 处理响应
           const result = await response.json();
 
-          if (result.code === 200) {
+          if (result.code === 200 || result.code === 0) {
             // 成功响应格式化
             informationAlert.innerHTML = `
                     <strong style="color: #2e7d32;">请求成功</strong>
