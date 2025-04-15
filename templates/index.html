@@ -47,7 +47,19 @@
                 {% if username == "doctor" %}
                 <s-alert type="error">你已被封禁！</s-alert>
                 {% elif username == "priestess" %}
-                <s-alert type="success">欢迎回来，普瑞赛斯！你的权限密钥为 "<<flag>>"。</s-alert>
+                <s-alert type="success" style="margin-bottom: 16px;">欢迎回来，普瑞赛斯！你的权限密钥为 "FLAG1=<<flag>>"。</s-alert><br>
+                <s-text-field label="请提交您要访问的内容 (http://)" style="width: 100%; max-width: 100%;" id="url">
+                </s-text-field>
+                <br>
+                <div align="right">
+                  <s-button style="margin-top: 16px; margin-bottom: 16px;" id="submit-btn">
+                    <s-circular-progress indeterminate="true" slot="start" id="progress"
+                      style="display: none"></s-circular-progress>
+                    提交
+                  </s-button>
+                </div>
+                <s-alert id="information">
+                  请在上方输入您想要访问的网页并点击提交
                 {% endif %}
               </div>
           </s-card>
@@ -58,6 +70,72 @@
   <script>
     //safari user-scalable=no
     document.addEventListener('gesturestart', (event) => event.preventDefault())
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // 通过ID获取元素
+      const submitBtn = document.getElementById('submit-btn');
+      const urlInput = document.getElementById('url');
+      const informationAlert = document.getElementById('information');
+      const progress = document.getElementById('progress');
+
+      submitBtn.addEventListener('click', async () => {
+        // 显示加载动画
+        progress.style.display = 'inline-block';
+        informationAlert.style.display = 'none';
+
+        try {
+          // 发送POST请求
+          const response = await fetch('/api/get_resource', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              url: urlInput.value.trim()
+            })
+          });
+
+          // 处理响应
+          const result = await response.json();
+
+          if (result.code === 200) {
+            // 成功响应格式化
+            informationAlert.innerHTML = `
+                    <strong style="color: #2e7d32;">请求成功</strong>
+                    <div style="margin-top: 8px;">
+                      <div align="left">
+                        <div><strong>URL:</strong> ${result.data.url}</div>
+                        <div style="margin-top: 6px;">
+                            <strong>响应内容:</strong>
+                              <pre style="background: #f5f5f5; padding: 8px; border-radius: 4px; overflow: auto; max-height: 300px;">${result.data.content}
+                              </pre>
+                            </div>
+                      </div>
+                    </div>
+                `;
+            informationAlert.type = 'success';
+          } else {
+            // 错误处理
+            informationAlert.innerHTML = `
+                    <strong style="color: #d32f2f;">错误 ${result.code}</strong>
+                    <div style="margin-top: 8px;">${result.data.content}</div>
+                `;
+            informationAlert.type = 'error';
+          }
+        } catch (error) {
+          // 网络错误处理
+          informationAlert.innerHTML = `
+                <strong style="color: #d32f2f;">网络错误</strong>
+                <div style="margin-top: 8px;">${error.message}</div>
+            `;
+          informationAlert.type = 'error';
+        } finally {
+          // 重置加载状态
+          progress.style.display = 'none';
+          informationAlert.style.display = 'block';
+        }
+      });
+    });
   </script>
   <script src="/static/js/sober.min.js"></script>
 
