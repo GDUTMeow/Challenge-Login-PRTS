@@ -78,7 +78,7 @@ RUN mkdir -p /etc/redis && \
     echo "dir /tmp" >> /etc/redis/redis.conf && \
     chmod 777 /tmp
 
-EXPOSE 5000 6379
+EXPOSE 5000
 
 # 启动命令
 CMD ["sh", "-c", "/usr/sbin/crond && redis-server /etc/redis/redis.conf --daemonize yes && python3 app.py"]
