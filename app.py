@@ -7,6 +7,7 @@ from flask import (
     send_from_directory,
     send_file,
     render_template_string,
+    make_response
 )
 import jwt
 import os
@@ -111,23 +112,71 @@ def static_handler(path):
 
 @app.route("/api/get_avatar")
 def avatar_handler():
+    token = request.cookies.get("token")
+    if not token:
+        return redirect("/login")
+    try:
+        jwt.decode(
+            token,
+            app.config["SECRET_KEY"],
+            algorithms=["HS256"],
+            options={"verify_aud": False},
+        )
+    except jwt.ExpiredSignatureError:
+        response = redirect("/login")
+        response.set_cookie("token", "", expires=0)
+        return response
+    except jwt.InvalidTokenError:
+        response = redirect("/login")
+        response.set_cookie("token", "", expires=0)
+        return response
     file = request.args.get("filename")
+    if "/proc" in file:
+        return make_response("Permission Denied", 403)
     return send_file("static/img/" + file)
 
 
 @app.route("/api/get_resource", methods=["POST"])
 def resource_handler():
+    token = request.cookies.get("token")
+    if not token:
+        return redirect("/login")
     try:
-        data = request.get_json()
-        target_url = data.get("url")
+        jwt_data = jwt.decode(
+            token,
+            app.config["SECRET_KEY"],
+            algorithms=["HS256"],
+            options={"verify_aud": False},
+        )
+        if jwt_data.get("sub") != "priestess":
+            return make_response("Permission Denied", 403)
+    except jwt.ExpiredSignatureError:
+        response = redirect("/login")
+        response.set_cookie("token", "", expires=0)
+        return response
+    except jwt.InvalidTokenError:
+        response = redirect("/login")
+        response.set_cookie("token", "", expires=0)
+        return response
+    data = request.get_json()
+    target_url = data.get("url")
 
-        # 移除所有协议和端口限制
-        parsed = urllib.parse.urlparse(target_url)
-        buffer = BytesIO()
-        c = pycurl.Curl()
+    # 移除所有协议和端口限制
+    parsed = urllib.parse.urlparse(target_url)
+    buffer = BytesIO()
+    c = pycurl.Curl()
 
+    try:
         if parsed.scheme == "file":
             # 因为改用 CentOS 后 curl 的版本太低了没有 PATH_AS_IS 选项，所以这里进行手动处理
+            if "/proc" in parsed.path:
+                return jsonify(
+                    {
+                        "code": 403,
+                        "success": False,
+                        "data": {"url": target_url, "content": "Permission Denied"},
+                    }
+                )
             try:
                 with open(parsed.path, "rb") as f:
                     content = f.read()
@@ -201,9 +250,9 @@ def resource_handler():
 
 
 if __name__ == "__main__":
-    with open("/flag", "r") as f:
-        flag = f.read()
-    os.remove("/flag")
-    # flag = "{{flag}}"
+    # with open("/flag", "r") as f:
+    #     flag = f.read()
+    # os.remove("/flag")
+    flag = "{{flag}}"
     prts_template.replace("<<flag>>", flag)
     app.run("0.0.0.0", 5000)
