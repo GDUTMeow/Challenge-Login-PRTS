@@ -119,6 +119,10 @@ dict://127.0.0.1:6379/bgsave
 
 因为这里是新建了一个 bash 进程来反弹给我们用的，所以不能直接看这里，我们得去 `/proc` 里面找，最后能在 `/proc/11/environ` 查看到我们需要的东西（这里的 `11` 可能会有变动）
 
+这里的 `11`，你也可以用 `ps` 命令来查看，或者直接 `pidof python3` 也可以
+
+甚至可以直接 `cat /proc/$(pidof python3)/environ` 就能出结果
+
 ![](https://cdn.jsdelivr.net/gh/GDUTMeow/Challenge-Login-PRTS/img/image-20250415183152658.png)
 
 得到 flag：`flag{DOnt_you-daRE-forGEt-Me_:>}` = 不准忘记我（普瑞赛斯自己说的，原话为 `Dr.{{username}}，不准忘记我`）
