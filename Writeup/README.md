@@ -107,7 +107,7 @@ dict://127.0.0.1:6379/bgsave
 
 ![](https://cdn.jsdelivr.net/gh/GDUTMeow/Challenge-Login-PRTS/img/image-20250415182745384.png)
 
-这里需要等待一会，因为我们的 crontab 是每分钟运行，等到监听的服务器弹出提env示就说明连接成功了
+这里需要等待一会，因为我们的 crontab 是每分钟运行，等到监听的服务器弹出提示就说明连接成功了
 
 ![](https://cdn.jsdelivr.net/gh/GDUTMeow/Challenge-Login-PRTS/img/image-20250415182853369.png)
 

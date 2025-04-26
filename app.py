@@ -250,9 +250,9 @@ def resource_handler():
 
 
 if __name__ == "__main__":
-    # with open("/flag", "r") as f:
-    #     flag = f.read()
-    # os.remove("/flag")
-    flag = "{{flag}}"
+    with open("/flag", "r") as f:
+        flag = f.read()
+    os.remove("/flag")
+    # flag = "{{flag}}"
     prts_template.replace("<<flag>>", flag)
     app.run("0.0.0.0", 5000)
